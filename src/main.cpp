@@ -9,6 +9,8 @@
 #include <peripherals.h>
 #include <Debug.h>
 
+#include "SPIFFS.h"
+
 #define NUM_LEDS 276 
 #define PIN 14
 #define DEFAULT_EFFECT 12 // rainbow
@@ -29,11 +31,35 @@ AsyncWiFiManager wifiManager(&server,&dns);
 //uint nUnansweredAliveRequests;
 bool bWebserverStarted;
 
+String ledState;
+// Replaces placeholder with LED state value
+String processor(const String& var)
+{
+  DEBUG_P(var);
+  if(var == "STATE"){
+    if(digitalRead(PIN_LED)){
+      ledState = "ON";
+    }
+    else{
+      ledState = "OFF";
+    }
+    DEBUG_P(ledState);
+    return ledState;
+  }
+  return String();
+}
+
 void setup() 
 {
   DEBUG_B(115200);
   DEBUG_P();
   DEBUG_P();
+
+  // Initialize SPIFFS
+  if(!SPIFFS.begin(true)){
+    DEBUG_P("An Error has occurred while mounting SPIFFS");
+    return;
+  }
 
   // initialize digital pin ledPin as an output.
   pinMode(PIN_LED, OUTPUT);

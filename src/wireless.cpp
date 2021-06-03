@@ -8,6 +8,7 @@
 #include <Debug.h>
 #include <MqttCredentials.h>
 #include <peripherals.h>
+#include "SPIFFS.h"
 
 extern AsyncWebServer server;
 extern bool bWebserverStarted;
@@ -15,6 +16,7 @@ extern AsyncWiFiManager wifiManager;
 extern AsyncMqttClient mqttClient;
 extern TimerHandle_t mqttReconnectTimer;
 extern TimerHandle_t wifiReconnectTimer;
+extern String processor(const String& var);
 
 //extern bool bPendingAliveRequest;
 //extern uint nUnansweredAliveRequests;
@@ -63,23 +65,32 @@ void startWebserver()
     return;
   }
 
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) 
+  // Route for root / web page
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
   {
-    //request->send(200, "text/plain", "Hi! I am radioPiEsp32.");
-
-
-    // HTML & CSS contents which display on web server
-    String HTML = "<!DOCTYPE html>\
-    <html>\
-    <body>\
-    <h1>&#128522; Beleuchtung: Esp32 &#128522;</h1>\
-    </body>\
-    </html>";
-
-    request->send(200, "text/html", HTML);
-    
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+  
+  // Route to load style.css file
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
+  {
+    request->send(SPIFFS, "/style.css", "text/css");
   });
 
+  // Route to set GPIO to HIGH
+  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request)
+  {
+    digitalWrite(PIN_LED, HIGH);    
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+  
+  // Route to set GPIO to LOW
+  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request)
+  {
+    digitalWrite(PIN_LED, LOW);    
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+  
   AsyncElegantOTA.begin(&server);    // Start ElegantOTA
   server.begin();
   bWebserverStarted = true;
