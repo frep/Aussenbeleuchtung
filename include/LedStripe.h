@@ -7,7 +7,7 @@
 class LedStripe
 {
   public:
-    LedStripe(byte numPins, byte ledPin, byte ledEffect);
+    LedStripe(uint16_t numPins, byte ledPin, byte ledEffect);
     ~LedStripe();
     void setup();
     bool changeEffect(byte newEffect);

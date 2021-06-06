@@ -12,4 +12,16 @@
   <p><a href="/on"><button class="button">ON</button></a></p>
   <p><a href="/off"><button class="button button2">OFF</button></a></p>
 </body>
+
+<form action="/get" target="hidden-form">
+
+  <label for="clientId">Client ID (current value %inputClientId%)</label><br>
+  <input type="number" id="clientId" name="inputClientId" placeholder="Client Id.."><br>
+
+  <label for="numLed">Anzahl Leds des Streifens (current value %inputNumLeds%)</label><br>
+  <input type="number" id="numLed" name="inputNumLeds" placeholder="Num Leds.."><br>
+
+  <input type="submit" value="Submit" onclick="submitMessage()">
+</form>
+
 </html>

@@ -2,7 +2,7 @@
 #include <EEPROM.h>
 
 
-LedStripe::LedStripe(byte numPins, byte ledPin, byte ledEffect)
+LedStripe::LedStripe(uint16_t numPins, byte ledPin, byte ledEffect)
 {
   NUM_LEDS = numPins;
   strip = Adafruit_NeoPixel(NUM_LEDS, ledPin, NEO_GRB + NEO_KHZ800);

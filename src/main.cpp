@@ -16,9 +16,11 @@
 #define DEFAULT_EFFECT 12 // rainbow
 
 // LED-Streifen
+uint16_t numLeds;
 byte storedLedEffect;
 LedStripe* pLedStripe;
 // Async MQTT
+byte clientId;
 AsyncMqttClient mqttClient;
 TimerHandle_t mqttReconnectTimer;
 TimerHandle_t wifiReconnectTimer;
@@ -46,6 +48,15 @@ String processor(const String& var)
     DEBUG_P(ledState);
     return ledState;
   }
+  else if (var == "inputClientId")
+  {
+    return String(clientId);
+  }
+  else if (var == "inputNumLeds")
+  {
+    return String(numLeds);
+  }
+
   return String();
 }
 

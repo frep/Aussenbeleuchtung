@@ -17,6 +17,11 @@ extern AsyncMqttClient mqttClient;
 extern TimerHandle_t mqttReconnectTimer;
 extern TimerHandle_t wifiReconnectTimer;
 extern String processor(const String& var);
+extern byte clientId;
+extern uint16_t numLeds;
+
+const char* PARAM_ClientId = "inputClientId";
+const char* PARAM_NumLeds = "inputNumLeds";
 
 //extern bool bPendingAliveRequest;
 //extern uint nUnansweredAliveRequests;
@@ -91,6 +96,15 @@ void startWebserver()
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
   
+  server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
+  {
+    String inputMessageClientId = request->getParam(PARAM_ClientId)->value();
+    String inputMessageNumLeds = request->getParam(PARAM_NumLeds)->value();
+    clientId = inputMessageClientId.toInt();
+    numLeds = inputMessageNumLeds.toInt();
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+
   AsyncElegantOTA.begin(&server);    // Start ElegantOTA
   server.begin();
   bWebserverStarted = true;
