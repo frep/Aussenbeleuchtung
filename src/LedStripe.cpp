@@ -1,5 +1,6 @@
 #include "LedStripe.h"
 #include <EEPROM.h>
+#include <Debug.h>
 
 
 LedStripe::LedStripe(uint16_t numPins, byte ledPin, byte ledEffect)
@@ -14,6 +15,8 @@ LedStripe::LedStripe(uint16_t numPins, byte ledPin, byte ledEffect)
     // invalid value -> initialize to 12
     changeEffect(12);
   }
+  DEBUG_T("LedStripe: numPins: ");
+  DEBUG_P(String(NUM_LEDS)); 
 }
 
 LedStripe::~LedStripe()

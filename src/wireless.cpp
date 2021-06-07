@@ -6,9 +6,9 @@
 #include <ESPmDNS.h>
 #include <wireless.h>
 #include <Debug.h>
-#include <MqttCredentials.h>
 #include <peripherals.h>
 #include "SPIFFS.h"
+#include "Config.h"
 
 extern AsyncWebServer server;
 extern bool bWebserverStarted;
@@ -17,11 +17,12 @@ extern AsyncMqttClient mqttClient;
 extern TimerHandle_t mqttReconnectTimer;
 extern TimerHandle_t wifiReconnectTimer;
 extern String processor(const String& var);
-extern byte clientId;
-extern uint16_t numLeds;
+extern Config* pConfig; 
 
 const char* PARAM_ClientId = "inputClientId";
 const char* PARAM_NumLeds = "inputNumLeds";
+
+//#define MQTT_HOST IPAddress(192, 168, 0, 206)
 
 //extern bool bPendingAliveRequest;
 //extern uint nUnansweredAliveRequests;
@@ -54,7 +55,7 @@ void connectToWifi()
 void connectToMqtt() 
 {
   DEBUG_P("Connecting to MQTT...");
-  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
+  mqttClient.setServer(pConfig->getMqttHost(), pConfig->getMqttPort());
   mqttClient.connect();
 }
 
@@ -100,8 +101,9 @@ void startWebserver()
   {
     String inputMessageClientId = request->getParam(PARAM_ClientId)->value();
     String inputMessageNumLeds = request->getParam(PARAM_NumLeds)->value();
-    clientId = inputMessageClientId.toInt();
-    numLeds = inputMessageNumLeds.toInt();
+    pConfig->setClientId(inputMessageClientId.toInt());
+    pConfig->setNumLeds(inputMessageNumLeds.toInt());
+    pConfig->saveConfigToFile();
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
 
