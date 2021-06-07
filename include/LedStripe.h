@@ -15,7 +15,7 @@ class LedStripe
 
   private:
 
-    byte NUM_LEDS;
+    uint16_t NUM_LEDS;
     Adafruit_NeoPixel strip;
     byte* pHeat;
     byte selectedEffect;

@@ -29,19 +29,30 @@ bool Config::loadConfigFromFile()
       if (configFile) 
       {
         DEBUG_P("opened config file");
-
+        
         // write data from file to JsonDocument
         DynamicJsonDocument doc(2048);
         deserializeJson(doc, configFile);
         configFile.close();
+        
         // copy data from JsonDocument to config
         clientId = doc["clientId"];
         mqtt_host = doc["mqtt_host"];
         mqtt_port = doc["mqtt_port"];
+        storedLedEffect = doc["storedLedEffect"];       
         numLeds = doc["numLeds"];
-        storedLedEffect = doc["storedLedEffect"];
+
+       if(DEBUGGING)
+       {
+        serializeJson(doc, Serial);
+        DEBUG_P();
+       }
         return true;
       }
+    }
+    else
+    {
+      DEBUG_P("config file does not exist");
     }
   } 
   else 
@@ -67,8 +78,7 @@ bool Config::saveConfigToFile()
   if (SPIFFS.begin()) 
   {
     DEBUG_P("mounted file system");
-    if (SPIFFS.exists(filename)) 
-    {
+
       //file exists, reading and loading
       DEBUG_P("reading config file");
       File configFile = SPIFFS.open(filename, "w");
@@ -78,7 +88,6 @@ bool Config::saveConfigToFile()
         configFile.close();
         return true;
       }
-    }
   } 
   else 
   {

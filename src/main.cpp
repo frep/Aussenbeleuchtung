@@ -84,9 +84,8 @@ void setup()
   // initialize digital pin ledPin as an output.
   pinMode(PIN_LED, OUTPUT);
   // setup ledStripe:
-  //EEPROM.get(0,storedLedEffect);
-  //pLedStripe = new LedStripe(NUM_LEDS, PIN, storedLedEffect);
-  pLedStripe = new LedStripe(pConfig->getNumLeds(), PIN, pConfig->getLedEffect());
+  uint16_t numberOfLEDs = pConfig->getNumLeds();
+  pLedStripe = new LedStripe(numberOfLEDs, PIN, pConfig->getLedEffect());
   pLedStripe->setup();
 
   mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
