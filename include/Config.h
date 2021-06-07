@@ -12,24 +12,27 @@ class Config
     bool loadConfigFromFile();
     bool saveConfigToFile();
     // setters
-    void setNumLeds(uint16_t value);
+    void setNumLeds(int value);
     void setClientId(int value);
     void setMqttHost(const char* host);
     void setMqttPort(int value);
+    void setLedEffect(byte value);
     // getters
     String getNumLedsString();
     String getClientIdString();
-    const char* getMqttHost();
+    String getMqttPortString();
+    String getLedEffectString();
+    String getMqttHost();
     int getMqttPort();
     uint16_t getNumLeds();
     byte getLedEffect();
 
   protected:
     const char *filename;
-    const char *mqtt_host;
+    String mqtt_host;
     int mqtt_port;
     int clientId;
-    uint16_t numLeds;
+    int numLeds;
     byte storedLedEffect;
 };
 

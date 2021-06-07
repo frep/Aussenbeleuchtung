@@ -8,18 +8,24 @@
 </head>
 <body>
   <h1>ESP32 Web Server</h1>
-  <p>GPIO state: <strong> %STATE%</strong></p>
-  <p><a href="/on"><button class="button">ON</button></a></p>
-  <p><a href="/off"><button class="button button2">OFF</button></a></p>
 </body>
 
 <form action="/get" target="hidden-form">
 
-  <label for="clientId">Client ID (current value %inputClientId%)</label><br>
-  <input type="number" id="clientId" name="inputClientId" placeholder="Client Id.."><br>
+  <label for="mqttHost">MQTT Server</label><br>
+  <input type="text" id="mqttHost" name="inputMqttHost" placeholder=%inputMqttHost%><br>
 
-  <label for="numLed">Anzahl Leds des Streifens (current value %inputNumLeds%)</label><br>
-  <input type="number" id="numLed" name="inputNumLeds" placeholder="Num Leds.."><br>
+  <label for="mqttPort">MQTT Port</label><br>
+  <input type="number" id="mqttPort" name="inputMqttPort" placeholder=%inputMqttPort%><br>
+
+  <label for="clientId">Client ID</label><br>
+  <input type="number" id="clientId" name="inputClientId" placeholder=%inputClientId%><br>
+
+  <label for="numLed">Anzahl Leds des Streifens</label><br>
+  <input type="number" id="numLed" name="inputNumLeds" placeholder=%inputNumLeds%><br>
+
+  <label for="ledEffect">Led Effekt</label><br>
+  <input type="number" id="ledEffect" name="inputLedEffect" placeholder=%inputLedEffect%><br>
 
   <input type="submit" value="Submit" onclick="submitMessage()">
 </form>

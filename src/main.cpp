@@ -32,39 +32,6 @@ AsyncWebServer server(80);
 DNSServer dns;
 AsyncWiFiManager wifiManager(&server,&dns);
 
-//bool bPendingAliveRequest;
-//uint nUnansweredAliveRequests;
-bool bWebserverStarted;
-
-String ledState;
-// Replaces placeholder with LED state value
-String processor(const String& var)
-{
-  DEBUG_P(var);
-  if(var == "STATE")
-  {
-    if(digitalRead(PIN_LED))
-    {
-      ledState = "ON";
-    }
-    else
-    {
-      ledState = "OFF";
-    }
-    DEBUG_P(ledState);
-    return ledState;
-  }
-  else if (var == "inputClientId")
-  {
-    return pConfig->getClientIdString();
-  }
-  else if (var == "inputNumLeds")
-  {
-    return pConfig->getNumLedsString();
-  }
-
-  return String();
-}
 
 void setup() 
 {

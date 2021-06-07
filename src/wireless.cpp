@@ -11,22 +11,19 @@
 #include "Config.h"
 
 extern AsyncWebServer server;
-extern bool bWebserverStarted;
 extern AsyncWiFiManager wifiManager;
 extern AsyncMqttClient mqttClient;
 extern TimerHandle_t mqttReconnectTimer;
 extern TimerHandle_t wifiReconnectTimer;
-extern String processor(const String& var);
 extern Config* pConfig; 
 
+const char* PARAM_MQTT_HOST = "inputMqttHost";
+const char* PARAM_MQTT_PORT = "inputMqttPort";
 const char* PARAM_ClientId = "inputClientId";
 const char* PARAM_NumLeds = "inputNumLeds";
+const char* PARAM_LED_Effect = "inputLedEffect";
 
-//#define MQTT_HOST IPAddress(192, 168, 0, 206)
-
-//extern bool bPendingAliveRequest;
-//extern uint nUnansweredAliveRequests;
-//extern RpiState state;
+bool bWebserverStarted;
 
 
 /* MQTT client Unterscheidung:
@@ -44,7 +41,45 @@ The other approach I use is to use json in the payload, for example
 /hello/world   {"msg":"err", "client":"clientid1"}
 */
 
+// Replaces placeholder with LED state value
+String processor(const String& var)
+{
+  DEBUG_T(var);
+  DEBUG_T(": ");
+  if (var == "inputClientId")
+  {
+    String value = pConfig->getClientIdString();
+    DEBUG_P(value);
+    return value;
+  }
+  else if (var == "inputNumLeds")
+  {
+    String value = pConfig->getNumLedsString();
+    DEBUG_P(value);
+    return value;
+  }
+  else if (var == "inputMqttHost")
+  {
+    //String value = String(pConfig->getMqttHost());
+    String value = pConfig->getMqttHost();
+    DEBUG_P(value);
+    return value;
+  }
+  else if (var == "inputMqttPort")
+  {
+    String value = pConfig->getMqttPortString();
+    DEBUG_P(value);
+    return value;
+  }
+  else if (var == "inputLedEffect")
+  {
+    String value = pConfig->getLedEffectString();
+    DEBUG_P(value);
+    return value;
+  }
 
+  return String();
+}
 
 void connectToWifi() 
 {
@@ -55,7 +90,7 @@ void connectToWifi()
 void connectToMqtt() 
 {
   DEBUG_P("Connecting to MQTT...");
-  mqttClient.setServer(pConfig->getMqttHost(), pConfig->getMqttPort());
+  mqttClient.setServer(pConfig->getMqttHost().c_str(), pConfig->getMqttPort());
   mqttClient.connect();
 }
 
@@ -101,8 +136,16 @@ void startWebserver()
   {
     String inputMessageClientId = request->getParam(PARAM_ClientId)->value();
     String inputMessageNumLeds = request->getParam(PARAM_NumLeds)->value();
+    String inputMessageMqttHost = request->getParam(PARAM_MQTT_HOST)->value();
+    String inputMessageMqttPort = request->getParam(PARAM_MQTT_PORT)->value();
+    String inputMessageLedEffect = request->getParam(PARAM_LED_Effect)->value();
+
+    // save value in config
     pConfig->setClientId(inputMessageClientId.toInt());
     pConfig->setNumLeds(inputMessageNumLeds.toInt());
+    pConfig->setMqttHost(inputMessageMqttHost.c_str());
+    pConfig->setMqttPort(inputMessageMqttPort.toInt());
+    pConfig->setLedEffect(inputMessageLedEffect.toInt());
     pConfig->saveConfigToFile();
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });

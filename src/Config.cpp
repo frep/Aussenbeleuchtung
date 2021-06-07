@@ -37,15 +37,17 @@ bool Config::loadConfigFromFile()
         
         // copy data from JsonDocument to config
         clientId = doc["clientId"];
-        mqtt_host = doc["mqtt_host"];
+        const char* host = doc["mqtt_host"];
+        mqtt_host = String(host);
         mqtt_port = doc["mqtt_port"];
-        storedLedEffect = doc["storedLedEffect"];       
+        storedLedEffect = doc["storedLedEffect"];  
         numLeds = doc["numLeds"];
-
+        
        #ifdef DEBUGGING     
         serializeJson(doc, Serial);
         DEBUG_P();
        #endif
+       
         return true;
       }
     }
@@ -86,6 +88,12 @@ bool Config::saveConfigToFile()
       if (configFile) 
       {
         serializeJson(doc, configFile);
+        
+        #ifdef DEBUGGING     
+          serializeJson(doc, Serial);
+          DEBUG_P();
+        #endif
+        
         configFile.close();
         return true;
       }
@@ -98,7 +106,7 @@ bool Config::saveConfigToFile()
   return false;
 }
 
-void Config::setNumLeds(uint16_t value)
+void Config::setNumLeds(int value)
 {
     numLeds = value;
 }
@@ -110,12 +118,19 @@ void Config::setClientId(int value)
 
 void Config::setMqttHost(const char* host)
 {
-    mqtt_host = host;
+    mqtt_host = String(host);
+    DEBUG_T("mqtt_host = ");
+    DEBUG_P(mqtt_host);
 }
 
 void Config::setMqttPort(int value)
 {
     mqtt_port = value;
+}
+
+void Config::setLedEffect(byte value)
+{
+  storedLedEffect = value;
 }
 
 String Config::getNumLedsString()
@@ -128,7 +143,17 @@ String Config::getClientIdString()
     return String(clientId);
 }
 
-const char* Config::getMqttHost()
+String Config::getMqttPortString()
+{
+  return String(mqtt_port);
+}
+
+String Config::getLedEffectString()
+{
+  return String(storedLedEffect);
+}
+
+String Config::getMqttHost()
 {
     return mqtt_host;
 }

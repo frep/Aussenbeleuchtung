@@ -36,7 +36,7 @@ bool LedStripe::changeEffect(byte newEffect)
   if(selectedEffect > 18 || selectedEffect < 0)
   {
     selectedEffect=newEffect;
-    EEPROM.put(0,newEffect); 
+    //EEPROM.put(0,newEffect);
     return true;
   }
   return false;
