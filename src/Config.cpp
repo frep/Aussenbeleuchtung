@@ -42,17 +42,18 @@ bool Config::loadConfigFromFile()
         storedLedEffect = doc["storedLedEffect"];       
         numLeds = doc["numLeds"];
 
-       if(DEBUGGING)
-       {
+       #ifdef DEBUGGING     
         serializeJson(doc, Serial);
         DEBUG_P();
-       }
+       #endif
         return true;
       }
     }
     else
     {
       DEBUG_P("config file does not exist");
+      // create a config file with default values
+      saveConfigToFile();
     }
   } 
   else 
