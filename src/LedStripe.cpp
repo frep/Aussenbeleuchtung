@@ -2,18 +2,12 @@
 #include <Debug.h>
 
 
-LedStripe::LedStripe(uint16_t numPins, byte ledPin, byte ledEffect)
+LedStripe::LedStripe(uint16_t numPins, byte ledPin)
 {
   NUM_LEDS = numPins;
   strip = Adafruit_NeoPixel(NUM_LEDS, ledPin, NEO_GRB + NEO_KHZ800);
   pHeat = new byte[NUM_LEDS];
-  selectedEffect = ledEffect;
-  // assert that selectedEffect is valid
-  if(selectedEffect > 18 || selectedEffect < 0)
-  {
-    // invalid value -> initialize to 12
-    changeEffect(12);
-  }
+  selectedEffect = eOff;
   DEBUG_T("LedStripe: numPins: ");
   DEBUG_P(String(NUM_LEDS)); 
 }
@@ -31,166 +25,194 @@ void LedStripe::setup()
 
 bool LedStripe::changeEffect(byte newEffect)
 {
-  DEBUG_T("changeEffect: ");
-  DEBUG_P(newEffect);
-  // change variable selectedEffect and write it to EEPROM, if newEffect is valid
-  if(selectedEffect > 18 || selectedEffect < 0)
+  if(isLedEffectValid(newEffect) && (selectedEffect != newEffect))
   {
     selectedEffect=newEffect;
+    DEBUG_T("Led effect changed: ");
+    DEBUG_P(newEffect);
     return true;
   }
   return false;
 }
 
-byte LedStripe::getMaxEffectNumber()
+bool LedStripe::isLedEffectValid(byte effect)
 {
-  return 18;
+  if((effect >= 0) && (effect < eNumLedEffects))
+  {
+    return true;
+  }
+  return false;
 }
 
 void LedStripe::loop()
 {
   switch(selectedEffect) 
   {
-    case 0  : {
-                // RGBLoop - no parameters
-                RGBLoop();
-                break;
-              }
+    case eOff:
+    {
+      // turn the led stripe off
+      turnOffLeds();
+      break;
+    }
 
-    case 1  : {
-                // FadeInOut - Color (red, green. blue)
-                FadeInOut(0xff, 0x00, 0x00); // red
-                FadeInOut(0xff, 0xff, 0xff); // white 
-                FadeInOut(0x00, 0x00, 0xff); // blue
-                break;
-              }
+    case eRGBLoop:
+    {
+      // RGBLoop - no parameters
+      RGBLoop();
+      break;
+    }
+
+    case eFadeInOut:
+    {
+      // FadeInOut - Color (red, green. blue)
+      FadeInOut(0xff, 0x00, 0x00); // red
+      FadeInOut(0xff, 0xff, 0xff); // white 
+      FadeInOut(0x00, 0x00, 0xff); // blue
+      break;
+    }
               
-    case 2  : {
-                // Strobe - Color (red, green, blue), number of flashes, flash speed, end pause
-                Strobe(0xff, 0xff, 0xff, 10, 50, 1000);
-                break;
-              }
+    case eStrobe:
+    {
+      // Strobe - Color (red, green, blue), number of flashes, flash speed, end pause
+      Strobe(0xff, 0xff, 0xff, 10, 50, 1000);
+      break;
+    }
 
-    case 3  : {
-                // HalloweenEyes - Color (red, green, blue), Size of eye, space between eyes, fade (true/false), steps, fade delay, end pause
-                HalloweenEyes(0xff, 0x00, 0x00, 
-                              1, 4, 
-                              true, random(5,50), random(50,150), 
-                              random(1000, 10000));
-                HalloweenEyes(0xff, 0x00, 0x00, 
-                              1, 4, 
-                              true, random(5,50), random(50,150), 
-                              random(1000, 10000));
-                break;
-              }
+    case eHalloweenEyes:
+    {
+      // HalloweenEyes - Color (red, green, blue), Size of eye, space between eyes, fade (true/false), steps, fade delay, end pause
+      HalloweenEyes(0xff, 0x00, 0x00, 1, 4, true, random(5,50), random(50,150), random(1000, 10000));
+      HalloweenEyes(0xff, 0x00, 0x00, 1, 4, true, random(5,50), random(50,150), random(1000, 10000));
+      break;
+    }
               
-    case 4  : {
-                // CylonBounce - Color (red, green, blue), eye size, speed delay, end pause
-                CylonBounce(0xff, 0x00, 0x00, 4, 10, 50);
-                break;
-              }
+    case eCylonBounce:
+    {
+      // CylonBounce - Color (red, green, blue), eye size, speed delay, end pause
+      CylonBounce(0xff, 0x00, 0x00, 4, 10, 50);
+      break;
+    }
               
-    case 5  : {
-                // NewKITT - Color (red, green, blue), eye size, speed delay, end pause
-                NewKITT(0xff, 0x00, 0x00, 8, 10, 50);
-                break;
-              }
+    case eNewKITT:
+    {
+      // NewKITT - Color (red, green, blue), eye size, speed delay, end pause
+      NewKITT(0xff, 0x00, 0x00, 8, 10, 50);
+      break;
+    }
               
-    case 6  : {
-                // Twinkle - Color (red, green, blue), count, speed delay, only one twinkle (true/false) 
-                Twinkle(0xff, 0x00, 0x00, 10, 100, false);
-                break;
-              }
+    case eTwinkle:
+    {
+      // Twinkle - Color (red, green, blue), count, speed delay, only one twinkle (true/false) 
+      Twinkle(0xff, 0x00, 0x00, 10, 100, false);
+      break;
+    }
               
-    case 7  : { 
-                // TwinkleRandom - twinkle count, speed delay, only one (true/false)
-                TwinkleRandom(20, 100, false);
-                break;
-              }
+    case eTwinkleRandom:
+    {
+      // TwinkleRandom - twinkle count, speed delay, only one (true/false)
+      TwinkleRandom(20, 100, false);
+      break;
+    }
+             
+    case eSparkle:
+    {
+      // Sparkle - Color (red, green, blue), speed delay
+      Sparkle(0xff, 0xff, 0xff, 0);
+      break;
+    }
               
-    case 8  : {
-                // Sparkle - Color (red, green, blue), speed delay
-                Sparkle(0xff, 0xff, 0xff, 0);
-                break;
-              }
-               
-    case 9  : {
-                // SnowSparkle - Color (red, green, blue), sparkle delay, speed delay
-                SnowSparkle(0x10, 0x10, 0x10, 20, random(100,1000));
-                break;
-              }
+    case eSnowSparkle:
+    {
+      // SnowSparkle - Color (red, green, blue), sparkle delay, speed delay
+      SnowSparkle(0x10, 0x10, 0x10, 20, random(100,1000));
+      break;
+    }
+         
+    case eRunningLights:
+    {
+      // Running Lights - Color (red, green, blue), wave dealy
+      RunningLights(0xff,0x00,0x00, 50);  // red
+      RunningLights(0xff,0xff,0xff, 50);  // white
+      RunningLights(0x00,0x00,0xff, 50);  // blue
+      break;
+    }
               
-    case 10 : {
-                // Running Lights - Color (red, green, blue), wave dealy
-                RunningLights(0xff,0x00,0x00, 50);  // red
-                RunningLights(0xff,0xff,0xff, 50);  // white
-                RunningLights(0x00,0x00,0xff, 50);  // blue
-                break;
-              }
-              
-    case 11 : {
-                // colorWipe - Color (red, green, blue), speed delay
-                colorWipe(0x00,0xff,0x00, 50);
-                colorWipe(0x00,0x00,0x00, 50);
-                break;
-              }
+    case eColorWipe:
+    {
+      // colorWipe - Color (red, green, blue), speed delay
+      colorWipe(0x00,0xff,0x00, 50);
+      colorWipe(0x00,0x00,0x00, 50);
+      break;
+    }
 
-    case 12 : {
-                // rainbowCycle - speed delay
-                rainbowCycle(20);
-                break;
-              }
+    case eRainbowCycle:
+    {
+      // rainbowCycle - speed delay
+      rainbowCycle(20);
+      break;
+    }
 
-    case 13 : {
-                // theatherChase - Color (red, green, blue), speed delay
-                theaterChase(0xff,0,0,50);
-                break;
-              }
+    case eTheaterChase:
+    {
+      // theatherChase - Color (red, green, blue), speed delay
+      theaterChase(0xff,0,0,50);
+      break;
+    }
 
-    case 14 : {
-                // theaterChaseRainbow - Speed delay
-                theaterChaseRainbow(50);
-                break;
-              }
+    case eTheaterChaseRainbow:
+    {
+      // theaterChaseRainbow - Speed delay
+      theaterChaseRainbow(50);
+      break;
+    }
 
-    case 15 : {
-                // Fire - Cooling rate, Sparking rate, speed delay
-                Fire(55,120,15);
-                break;
-              }
+    case eFire:
+    {
+      // Fire - Cooling rate, Sparking rate, speed delay
+      Fire(55,120,15);
+      break;
+    }
+
+    // simple bouncingBalls not included, since BouncingColoredBalls can perform this as well as shown below
+    // BouncingColoredBalls - Number of balls, color (red, green, blue) array, continuous
+    // CAUTION: If set to continuous then this effect will never stop!!!           
+    case eBouncingColoredBalls:
+    {
+      // mimic BouncingBalls
+      byte onecolor[1][3] = { {0xff, 0x00, 0x00} };
+      BouncingColoredBalls(1, onecolor, false);
+      break;
+    }
+
+    case eMultipleBouncingColoredBalls:
+    {
+      // multiple colored balls
+      byte colors[3][3] = { {0xff, 0x00, 0x00}, 
+                            {0xff, 0xff, 0xff}, 
+                            {0x00, 0x00, 0xff} };
+      BouncingColoredBalls(3, colors, false);
+      break;
+    }
 
 
-              // simple bouncingBalls not included, since BouncingColoredBalls can perform this as well as shown below
-              // BouncingColoredBalls - Number of balls, color (red, green, blue) array, continuous
-              // CAUTION: If set to continuous then this effect will never stop!!! 
-              
-    case 16 : {
-                // mimic BouncingBalls
-                byte onecolor[1][3] = { {0xff, 0x00, 0x00} };
-                BouncingColoredBalls(1, onecolor, false);
-                break;
-              }
-
-    case 17 : {
-                // multiple colored balls
-                byte colors[3][3] = { {0xff, 0x00, 0x00}, 
-                                      {0xff, 0xff, 0xff}, 
-                                      {0x00, 0x00, 0xff} };
-                BouncingColoredBalls(3, colors, false);
-                break;
-              }
-
-    case 18 : {
-                // meteorRain - Color (red, green, blue), meteor size, trail decay, random trail decay (true/false), speed delay 
-                meteorRain(0xff,0xff,0xff,10, 64, true, 30);
-                break;
-              }
+    case eMeteorRain:
+    {
+      // meteorRain - Color (red, green, blue), meteor size, trail decay, random trail decay (true/false), speed delay 
+      meteorRain(0xff,0xff,0xff,10, 64, true, 30);
+      break;
+    }
   }
 }
 
 // *************************
 // ** LEDEffect Functions **
 // *************************
+
+void LedStripe::turnOffLeds()
+{
+  setAll(0,0,0);
+  showStrip();
+}
 
 void LedStripe::RGBLoop()
 {

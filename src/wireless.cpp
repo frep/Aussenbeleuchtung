@@ -253,7 +253,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     // decode payload (ledEffect)
     byte ledEffect = String(payload).toInt();
     // check if ledEffect is valid
-    if((ledEffect >= 0) && (ledEffect <= pLedStripe->getMaxEffectNumber()))
+    if(pLedStripe->isLedEffectValid(ledEffect))
     {
       pLedStripe->changeEffect(ledEffect);
     }

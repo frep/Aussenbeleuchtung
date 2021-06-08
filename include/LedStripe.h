@@ -4,14 +4,39 @@
 #include <Arduino.h>
 #include "Adafruit_NeoPixel.h"
 
+enum ledEffect
+{
+  eOff,
+  eRGBLoop,
+  eFadeInOut,
+  eStrobe,
+  eHalloweenEyes,
+  eCylonBounce,
+  eNewKITT,
+  eTwinkle,
+  eTwinkleRandom,
+  eSparkle,
+  eSnowSparkle,
+  eRunningLights,
+  eColorWipe,
+  eRainbowCycle,
+  eTheaterChase,
+  eTheaterChaseRainbow,
+  eFire,
+  eBouncingColoredBalls,
+  eMultipleBouncingColoredBalls,
+  eMeteorRain,
+  eNumLedEffects     // muss immer an letzter Stelle stehen
+};
+
 class LedStripe
 {
   public:
-    LedStripe(uint16_t numPins, byte ledPin, byte ledEffect);
+    LedStripe(uint16_t numPins, byte ledPin);
     ~LedStripe();
     void setup();
     bool changeEffect(byte newEffect);
-    byte getMaxEffectNumber();
+    bool isLedEffectValid(byte effect);
     void loop();
 
   private:
@@ -21,6 +46,7 @@ class LedStripe
     byte* pHeat;
     byte selectedEffect;
 
+    void turnOffLeds();
     void RGBLoop();
     void FadeInOut(byte red, byte green, byte blue);
     void Strobe(byte red, byte green, byte blue, int StrobeCount, int FlashDelay, int EndPause);

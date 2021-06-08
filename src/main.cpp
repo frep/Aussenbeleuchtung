@@ -35,7 +35,7 @@ void setup()
   // initialize digital pin ledPin as an output.
   pinMode(PIN_LED, OUTPUT);
   // setup ledStripe:
-  pLedStripe = new LedStripe(pConfig->getNumLeds(), PIN, pConfig->getLedEffect());
+  pLedStripe = new LedStripe(pConfig->getNumLeds(), PIN);
   pLedStripe->setup();
   // initialize wireless functions
   initWireless();
