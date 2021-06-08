@@ -16,7 +16,6 @@ class Config
     void setClientId(int value);
     void setMqttHost(const char* host);
     void setMqttPort(int value);
-    void setLedEffect(byte value);
     // getters
     String getNumLedsString();
     String getClientIdString();
@@ -26,7 +25,6 @@ class Config
     String getMqttTopic();
     int getMqttPort();
     uint16_t getNumLeds();
-    byte getLedEffect();
 
   protected:
     const char *filename;
@@ -35,7 +33,6 @@ class Config
     int mqtt_port;
     int clientId;
     int numLeds;
-    byte storedLedEffect;
 };
 
 #endif

@@ -27,7 +27,6 @@ const char* PARAM_MQTT_HOST = "inputMqttHost";
 const char* PARAM_MQTT_PORT = "inputMqttPort";
 const char* PARAM_ClientId = "inputClientId";
 const char* PARAM_NumLeds = "inputNumLeds";
-const char* PARAM_LED_Effect = "inputLedEffect";
 
 bool bWebserverStarted;
 
@@ -57,12 +56,6 @@ String processor(const String& var)
   else if (var == "inputMqttPort")
   {
     String value = pConfig->getMqttPortString();
-    DEBUG_P(value);
-    return value;
-  }
-  else if (var == "inputLedEffect")
-  {
-    String value = pConfig->getLedEffectString();
     DEBUG_P(value);
     return value;
   }
@@ -144,14 +137,12 @@ void startWebserver()
     String inputMessageNumLeds = request->getParam(PARAM_NumLeds)->value();
     String inputMessageMqttHost = request->getParam(PARAM_MQTT_HOST)->value();
     String inputMessageMqttPort = request->getParam(PARAM_MQTT_PORT)->value();
-    String inputMessageLedEffect = request->getParam(PARAM_LED_Effect)->value();
 
     // save value in config
     pConfig->setClientId(inputMessageClientId.toInt());
     pConfig->setNumLeds(inputMessageNumLeds.toInt());
     pConfig->setMqttHost(inputMessageMqttHost.c_str());
     pConfig->setMqttPort(inputMessageMqttPort.toInt());
-    pConfig->setLedEffect(inputMessageLedEffect.toInt());
     pConfig->saveConfigToFile();
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });

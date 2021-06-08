@@ -10,7 +10,6 @@ Config::Config(const char *file)
     mqtt_port = 1883;
     clientId = 1;
     numLeds = 276;
-    storedLedEffect = 12;
     // try to load values from file
     loadConfigFromFile();
 }
@@ -40,8 +39,7 @@ bool Config::loadConfigFromFile()
         clientId = doc["clientId"];
         const char* host = doc["mqtt_host"];
         mqtt_host = String(host);
-        mqtt_port = doc["mqtt_port"];
-        storedLedEffect = doc["storedLedEffect"];  
+        mqtt_port = doc["mqtt_port"]; 
         numLeds = doc["numLeds"];
         
        #ifdef DEBUGGING     
@@ -75,7 +73,6 @@ bool Config::saveConfigToFile()
     doc["mqtt_host"] = mqtt_host;
     doc["mqtt_port"] = mqtt_port;
     doc["numLeds"] = numLeds;
-    doc["storedLedEffect"] = storedLedEffect;
 
     // write Json document to file
   DEBUG_P("mounting FS...");
@@ -127,11 +124,6 @@ void Config::setMqttPort(int value)
   mqtt_port = value;
 }
 
-void Config::setLedEffect(byte value)
-{
-  storedLedEffect = value;
-}
-
 String Config::getNumLedsString()
 {
   return String(numLeds);
@@ -145,11 +137,6 @@ String Config::getClientIdString()
 String Config::getMqttPortString()
 {
   return String(mqtt_port);
-}
-
-String Config::getLedEffectString()
-{
-  return String(storedLedEffect);
 }
 
 String Config::getMqttHost()
@@ -173,9 +160,4 @@ int Config::getMqttPort()
 uint16_t Config::getNumLeds()
 {
   return numLeds;
-}
-
-byte Config::getLedEffect()
-{
-  return storedLedEffect;
 }
