@@ -98,9 +98,9 @@ void startWebserver()
 {
   DEBUG_P("start webserver");
 
-  // ToDo: Stripe-Nummer konfigurierbar ueber ESPAsyncWiFiManager
-  // see: https://github.com/alanswx/ESPAsyncWiFiManager/blob/master/examples/AutoConnectWithFSParameters/AutoConnectWithFSParameters.ino
-  if(!MDNS.begin("stripe1"))    // http://stripe1.local
+  String name = String("stripe") + pConfig->getClientIdString();
+  
+  if(!MDNS.begin(name.c_str()))    // e.g. http://stripe1.local
   {
     DEBUG_P("Error starting mDNS");
     return;

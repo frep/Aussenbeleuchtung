@@ -108,24 +108,22 @@ bool Config::saveConfigToFile()
 
 void Config::setNumLeds(int value)
 {
-    numLeds = value;
+  numLeds = value;
 }
 
 void Config::setClientId(int value)
 {
-    clientId = value;
+  clientId = value;
 }
 
 void Config::setMqttHost(const char* host)
 {
-    mqtt_host = String(host);
-    DEBUG_T("mqtt_host = ");
-    DEBUG_P(mqtt_host);
+  mqtt_host = String(host);
 }
 
 void Config::setMqttPort(int value)
 {
-    mqtt_port = value;
+  mqtt_port = value;
 }
 
 void Config::setLedEffect(byte value)
@@ -135,12 +133,12 @@ void Config::setLedEffect(byte value)
 
 String Config::getNumLedsString()
 {
-    return String(numLeds);
+  return String(numLeds);
 }
 
 String Config::getClientIdString()
 {
-    return String(clientId);
+  return String(clientId);
 }
 
 String Config::getMqttPortString()
@@ -155,20 +153,20 @@ String Config::getLedEffectString()
 
 String Config::getMqttHost()
 {
-    return mqtt_host;
+  return mqtt_host;
 }
 
 int Config::getMqttPort()
 {
-    return mqtt_port;
+  return mqtt_port;
 }
 
 uint16_t Config::getNumLeds()
 {
-    return numLeds;
+  return numLeds;
 }
 
 byte Config::getLedEffect()
 {
-    return storedLedEffect;
+  return storedLedEffect;
 }
