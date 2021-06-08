@@ -6,6 +6,7 @@ Config::Config(const char *file)
     filename = file;
     // init members with default values
     mqtt_host = "192.168.0.266";
+    mqtt_topic = "ledStreifen";
     mqtt_port = 1883;
     clientId = 1;
     numLeds = 276;
@@ -154,6 +155,14 @@ String Config::getLedEffectString()
 String Config::getMqttHost()
 {
   return mqtt_host;
+}
+
+String Config::getMqttTopic()
+{
+  String topic(mqtt_topic);
+  topic.concat("/");
+  topic.concat(clientId);
+  return topic;
 }
 
 int Config::getMqttPort()

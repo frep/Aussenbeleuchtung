@@ -11,6 +11,7 @@ class LedStripe
     ~LedStripe();
     void setup();
     bool changeEffect(byte newEffect);
+    byte getMaxEffectNumber();
     void loop();
 
   private:

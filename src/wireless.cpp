@@ -9,6 +9,7 @@
 #include <peripherals.h>
 #include "SPIFFS.h"
 #include "Config.h"
+#include "LedStripe.h"
 
 // Async MQTT
 AsyncMqttClient mqttClient;
@@ -19,7 +20,8 @@ AsyncWebServer server(80);
 DNSServer dns;
 AsyncWiFiManager wifiManager(&server,&dns);
 
-extern Config* pConfig; 
+extern Config* pConfig;
+extern LedStripe* pLedStripe;
 
 const char* PARAM_MQTT_HOST = "inputMqttHost";
 const char* PARAM_MQTT_PORT = "inputMqttPort";
@@ -28,22 +30,6 @@ const char* PARAM_NumLeds = "inputNumLeds";
 const char* PARAM_LED_Effect = "inputLedEffect";
 
 bool bWebserverStarted;
-
-
-/* MQTT client Unterscheidung:
-   ===========================
-/hello/clientid1/world  ok
-/hello/clientid2/world  err
-/hello/clientid3/world  warning
-
-Then subscribe to the topic like this; 
-/hello/+/world
-Then in your code transform the topic name to get the message and client id.
-
-The other approach I use is to use json in the payload, for example
-
-/hello/world   {"msg":"err", "client":"clientid1"}
-*/
 
 // Replaces placeholder with LED state value
 String processor(const String& var)
@@ -213,7 +199,9 @@ void onMqttConnect(bool sessionPresent)
   DEBUG_P(sessionPresent);
 
   // Meldungen fuer den Esp32 abonnieren
-  mqttClient.subscribe("ledSteifen", 0);
+  mqttClient.subscribe(pConfig->getMqttTopic().c_str(), 0);
+  DEBUG_T("subscribe to topic: ");
+  DEBUG_P(pConfig->getMqttTopic());
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) 
@@ -260,28 +248,21 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   DEBUG_T("  total: ");
   DEBUG_P(total);
 
-  if(!strcmp(topic, "ledSteifen"))
+  if(!strcmp(topic, pConfig->getMqttTopic().c_str()))
   {
-    /*
-      if(!strcmp(payload, "alive"))
-      {
-        DEBUG_P("radioPiEsp32: alive");
-        if(state == rpiStartup)
-        {
-          // startup has finished
-          state = rpiUp;
-        }
-        // a pending alive request was answered
-        bPendingAliveRequest = false;
-        nUnansweredAliveRequests = 0;
-      }
+    // decode payload (ledEffect)
+    byte ledEffect = String(payload).toInt();
+    // check if ledEffect is valid
+    if((ledEffect >= 0) && (ledEffect <= pLedStripe->getMaxEffectNumber()))
+    {
+      pLedStripe->changeEffect(ledEffect);
+    }
+    else
+    {
+      DEBUG_T("Error! Invalid ledEffect: ");
+      DEBUG_P(ledEffect);
+    }
 
-      if(!strcmp(payload, "ledOff"))
-      {
-        DEBUG_P("radioPiEsp32: ledOff");
-        pixels.ledOff();
-      }
-    */
   }
 
 }

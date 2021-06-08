@@ -23,6 +23,7 @@ class Config
     String getMqttPortString();
     String getLedEffectString();
     String getMqttHost();
+    String getMqttTopic();
     int getMqttPort();
     uint16_t getNumLeds();
     byte getLedEffect();
@@ -30,6 +31,7 @@ class Config
   protected:
     const char *filename;
     String mqtt_host;
+    String mqtt_topic;
     int mqtt_port;
     int clientId;
     int numLeds;

@@ -5,6 +5,13 @@
 #include <ESPAsyncWebServer.h>
 #include <peripherals.h>
 
+// =======================================================================
+// MQTT message format:
+// =======================================================================
+// topic: <MQTT_Topic>/<ClientId>   e.g.    ledStreifen/1
+// message: <ledEffect>             e.g.    12
+// =======================================================================
+
 void initWireless();
 void connectToWifi();
 void connectToMqtt();

@@ -1,5 +1,4 @@
 #include "LedStripe.h"
-#include <EEPROM.h>
 #include <Debug.h>
 
 
@@ -32,6 +31,8 @@ void LedStripe::setup()
 
 bool LedStripe::changeEffect(byte newEffect)
 {
+  DEBUG_T("changeEffect: ");
+  DEBUG_P(newEffect);
   // change variable selectedEffect and write it to EEPROM, if newEffect is valid
   if(selectedEffect > 18 || selectedEffect < 0)
   {
@@ -39,6 +40,11 @@ bool LedStripe::changeEffect(byte newEffect)
     return true;
   }
   return false;
+}
+
+byte LedStripe::getMaxEffectNumber()
+{
+  return 18;
 }
 
 void LedStripe::loop()
