@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <AsyncMqttClient.h>
 #include <ESPAsyncWebServer.h>
-#include <ESPAsyncWiFiManager.h> 
+#include <ESPAsyncWiFiManager.h>      // https://github.com/tzapu/WiFiManager
 #include <AsyncElegantOTA.h>
 #include <ESPmDNS.h>
 #include <wireless.h>
@@ -10,11 +10,15 @@
 #include "SPIFFS.h"
 #include "Config.h"
 
-extern AsyncWebServer server;
-extern AsyncWiFiManager wifiManager;
-extern AsyncMqttClient mqttClient;
-extern TimerHandle_t mqttReconnectTimer;
-extern TimerHandle_t wifiReconnectTimer;
+// Async MQTT
+AsyncMqttClient mqttClient;
+TimerHandle_t mqttReconnectTimer;
+TimerHandle_t wifiReconnectTimer;
+// WifiManager
+AsyncWebServer server(80);
+DNSServer dns;
+AsyncWiFiManager wifiManager(&server,&dns);
+
 extern Config* pConfig; 
 
 const char* PARAM_MQTT_HOST = "inputMqttHost";
@@ -60,7 +64,6 @@ String processor(const String& var)
   }
   else if (var == "inputMqttHost")
   {
-    //String value = String(pConfig->getMqttHost());
     String value = pConfig->getMqttHost();
     DEBUG_P(value);
     return value;
@@ -79,6 +82,23 @@ String processor(const String& var)
   }
 
   return String();
+}
+
+void initWireless()
+{
+  mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
+  wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
+
+  WiFi.onEvent(WiFiEvent);
+
+  mqttClient.onConnect(onMqttConnect);
+  mqttClient.onDisconnect(onMqttDisconnect);
+  mqttClient.onSubscribe(onMqttSubscribe);
+  mqttClient.onUnsubscribe(onMqttUnsubscribe);
+  mqttClient.onMessage(onMqttMessage);
+  mqttClient.onPublish(onMqttPublish);
+
+  connectToWifi();
 }
 
 void connectToWifi() 

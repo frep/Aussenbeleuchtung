@@ -5,6 +5,7 @@
 #include <ESPAsyncWebServer.h>
 #include <peripherals.h>
 
+void initWireless();
 void connectToWifi();
 void connectToMqtt();
 void startWebserver();
