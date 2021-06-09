@@ -1,42 +1,15 @@
 #ifndef INPUTS_H
 #define INPUTS_H
 
-#include <Arduino.h>
-#include <Adafruit_NeoPixel.h>
-
-// Raspberry Pi states
-enum RpiState : uint8_t 
-{
-  rpiDown,
-  rpiStartup,
-  rpiUp,
-  rpiShutdown,   
-};
-
-/////////////////////////////////////////////////////////////////////////////////////
-// times in milliseconds
-/////////////////////////////////////////////////////////////////////////////////////
-
-#define longpress        1000      
-#define isAliveInterval  5000
-#define shutdownTime    30000
-
 /////////////////////////////////////////////////////////////////////////////////////
 // Hardware: esp32doit-devkit-v1
 /////////////////////////////////////////////////////////////////////////////////////
 
-// Onboard - LED
-#define PIN_LED    2
+#define PIN_ONBOARD_LED     2
+#define PIN_LED_STRIPE     14
 
-/////////////////////////////////////////////////////////////////////////////////////
-// Raspberry Pi control functions
-/////////////////////////////////////////////////////////////////////////////////////
-//void startup();
-//void shutdown();
-//void isRpiAlive();
-//void isRpiDown();
-//void handleState(RpiState actualState);
-//String getRpiState(RpiState state);
-//String getRelayState();
+#define PIN_SENSOR_1       36
+#define PIN_SENSOR_2       39
+#define PIN_SENSOR_3       34
 
 #endif

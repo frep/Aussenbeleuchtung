@@ -8,7 +8,7 @@ Config::Config(const char *file)
     mqtt_host = "192.168.0.266";
     mqtt_topic = "ledStreifen";
     mqtt_port = 1883;
-    clientId = 1;
+    clientId = 0;
     numLeds = 276;
     // try to load values from file
     loadConfigFromFile();

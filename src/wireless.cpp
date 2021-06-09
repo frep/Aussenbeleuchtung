@@ -120,14 +120,14 @@ void startWebserver()
   // Route to set GPIO to HIGH
   server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request)
   {
-    digitalWrite(PIN_LED, HIGH);    
+    digitalWrite(PIN_ONBOARD_LED, HIGH);    
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
   
   // Route to set GPIO to LOW
   server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request)
   {
-    digitalWrite(PIN_LED, LOW);    
+    digitalWrite(PIN_ONBOARD_LED, LOW);    
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
   

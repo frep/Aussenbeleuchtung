@@ -8,8 +8,11 @@
 // =======================================================================
 // MQTT message format:
 // =======================================================================
-// topic: <MQTT_Topic>/<ClientId>   e.g.    ledStreifen/1
-// message: <ledEffect>             e.g.    12
+// topic:   <MQTT_Topic>/<ClientId>  e.g.    ledStreifen/1
+// message: <ledEffect>              e.g.    12
+// =======================================================================
+// topic:   <MQTT_Topic>             e.g.    motion
+// message: <ClientId>_<SensorId>    e.g.    1_3
 // =======================================================================
 
 void initWireless();
