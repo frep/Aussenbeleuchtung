@@ -12,4 +12,9 @@
 #define PIN_SENSOR_2       39
 #define PIN_SENSOR_3       34
 
+/////////////////////////////////////////////////////////////////////////////////////
+
+void setupPeripherals();
+void loopPeripherals();
+
 #endif
