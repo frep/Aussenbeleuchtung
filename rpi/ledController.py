@@ -3,19 +3,25 @@
 import paho.mqtt.client as mqtt
 import subprocess
 import json
+import time, threading
 
 MQTT_SERVER = "localhost"
 MQTT_PORT   = 1883
 MQTT_TOPIC  = "motion"
 
+# led Effect for the led stripes
+DEFAULT_EFFECT = 13
+EFFECT_TIME = 10 # in seconds
+NUM_OF_LED_STRIPES = 7
+actualEffect = DEFAULT_EFFECT
+
 client = mqtt.Client()
 
 def setup():
  client.on_connect = on_connect
- #client.on_message = on_first_message
  client.on_message = on_message
  client.on_publish = on_publish
- #client.on_log = on_log
+ client.on_log = on_log
  client.on_disconnect = on_disconnect
  client.connect(MQTT_SERVER, MQTT_PORT, 60)
 
@@ -30,15 +36,33 @@ def on_disconnect(client, userdata, rc):
  print("client disconnected ok")
 
 def on_message(client, userdata, msg):
+ # motion message received
  print(msg.topic+" "+str(msg.payload))
- client.publish("ledStreifen", "12")
+ # turn leds on
+ setLedEffectToAllStripes(actualEffect)
+ # start timer to turn leds off again
+ threading.Timer(EFFECT_TIME, timeUp).start()
 
 def on_publish(client, userdata, result):
  print("data published \n")
 
-# after the first message is received, change the callback function
-#def on_first_message(client, userdata, msg):
-# client.on_message = on_message
+def timeUp():
+  turnOffAllStripes()
+
+# led functions
+def setLedEffectToAllStripes(effect):
+  for x in range(1, (NUM_OF_LED_STRIPES+1)):
+    msgTopic = "ledStreifen/"+str(x)
+    msgPayload = str(effect)
+    # print("topic: "+msgTopic+ " payload:"+msgPayload)
+    client.publish(msgTopic, msgPayload)
+
+def turnOffAllStripes():
+  setLedEffectToAllStripes(0)
+
+def changeEffect(newEffect):
+  actualEffect = newEffect
+
 
 if __name__ == '__main__':
 
