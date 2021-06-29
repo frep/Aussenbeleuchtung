@@ -10,7 +10,7 @@ Die Logik über die Ansteuerung der LED-Streifen findet auf dem Raspberry Pi (RP
 Pro LED-Streifen gibt es einen Mikrokontroller (Esp32 doit devkit v1), welcher die Kommunikation via MQTT sicherstellt und weiters den LED-Streifen ansteuert und die Bewegungssensoren (0-3 Sensoren pro Bord) auswerten. Die Programmierung des Mikrokontrollers erfolgte mittels der [PlatformIO-IDE](https://platformio.org/) innerhalb von Visual Studio Code (VSCode).
 
 <p align="center">
-<img src=docs/ESP32-DOIT-DEVKIT-V1.jpeg width=80%/>
+<img src=docs/ESP32-DOIT-DEVKIT-V1.png width=80%/>
 </p>
 
 ## Setup - RPi
