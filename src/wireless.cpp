@@ -25,8 +25,8 @@ extern LedStripe* pLedStripe;
 
 const char* PARAM_MQTT_HOST = "inputMqttHost";
 const char* PARAM_MQTT_PORT = "inputMqttPort";
-const char* PARAM_ClientId = "inputClientId";
-const char* PARAM_NumLeds = "inputNumLeds";
+const char* PARAM_ClientId  = "inputClientId";
+const char* PARAM_NumLeds   = "inputNumLeds";
 
 bool bWebserverStarted;
 
@@ -134,7 +134,7 @@ void startWebserver()
   server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
   {
     String inputMessageClientId = request->getParam(PARAM_ClientId)->value();
-    String inputMessageNumLeds = request->getParam(PARAM_NumLeds)->value();
+    String inputMessageNumLeds  = request->getParam(PARAM_NumLeds)->value();
     String inputMessageMqttHost = request->getParam(PARAM_MQTT_HOST)->value();
     String inputMessageMqttPort = request->getParam(PARAM_MQTT_PORT)->value();
 
@@ -186,13 +186,11 @@ void WiFiEvent(WiFiEvent_t event)
 void onMqttConnect(bool sessionPresent) 
 {
   DEBUG_P("Connected to MQTT.");
-  DEBUG_T("Session present: ");
-  DEBUG_P(sessionPresent);
+  DEBUG_T("Session present: "); DEBUG_P(sessionPresent);
 
   // Meldungen fuer den Esp32 abonnieren
   mqttClient.subscribe(pConfig->getMqttTopic().c_str(), 0);
-  DEBUG_T("subscribe to topic: ");
-  DEBUG_P(pConfig->getMqttTopic());
+  DEBUG_T("subscribe to topic: "); DEBUG_P(pConfig->getMqttTopic());
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) 
@@ -208,37 +206,27 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
 void onMqttSubscribe(uint16_t packetId, uint8_t qos) 
 {
   DEBUG_P("Subscribe acknowledged.");
-  DEBUG_T("  packetId: ");
-  DEBUG_P(packetId);
-  DEBUG_T("  qos: ");
-  DEBUG_P(qos);
+  DEBUG_T("  packetId: "); DEBUG_P(packetId);
+  DEBUG_T("  qos: "); DEBUG_P(qos);
 }
 
 void onMqttUnsubscribe(uint16_t packetId) 
 {
   DEBUG_P("Unsubscribe acknowledged.");
-  DEBUG_T("  packetId: ");
-  DEBUG_P(packetId);
+  DEBUG_T("  packetId: "); DEBUG_P(packetId);
 }
 
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) 
 {
   DEBUG_P("Publish received.");
-  DEBUG_T("  topic: ");
-  DEBUG_P(topic);
-  DEBUG_T("  qos: ");
-  DEBUG_P(properties.qos);
-  DEBUG_T("  dup: ");
-  DEBUG_P(properties.dup);
-  DEBUG_T("  retain: ");
-  DEBUG_P(properties.retain);
-  DEBUG_T("  len: ");
-  DEBUG_P(len);
-  DEBUG_T("  index: ");
-  DEBUG_P(index);
-  DEBUG_T("  total: ");
-  DEBUG_P(total);
-
+  DEBUG_T("  topic: "); DEBUG_P(topic);
+  DEBUG_T("  qos: "); DEBUG_P(properties.qos);
+  DEBUG_T("  dup: "); DEBUG_P(properties.dup);
+  DEBUG_T("  retain: "); DEBUG_P(properties.retain);
+  DEBUG_T("  len: "); DEBUG_P(len);
+  DEBUG_T("  index: "); DEBUG_P(index);
+  DEBUG_T("  total: "); DEBUG_P(total);
+  
   if(!strcmp(topic, pConfig->getMqttTopic().c_str()))
   {
     // decode payload (ledEffect)
@@ -250,17 +238,13 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     }
     else
     {
-      DEBUG_T("Error! Invalid ledEffect: ");
-      DEBUG_P(ledEffect);
+      DEBUG_T("Error! Invalid ledEffect: "); DEBUG_P(ledEffect);
     }
-
   }
-
 }
 
 void onMqttPublish(uint16_t packetId) 
 {
   DEBUG_P("Publish acknowledged.");
-  DEBUG_T("  packetId: ");
-  DEBUG_P(packetId);
+  DEBUG_T("  packetId: "); DEBUG_P(packetId);
 }
