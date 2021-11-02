@@ -7,7 +7,8 @@ import time, threading
 
 MQTT_SERVER = "localhost"
 MQTT_PORT   = 1883
-MQTT_TOPIC  = "motion"
+MQTT_TOPIC_MOTION = "motion"
+MQTT_TOPIC_EFFEKT = "effekt"
 
 # led Effect for the led stripes
 DEFAULT_EFFECT = 13
@@ -30,18 +31,23 @@ def on_log(client, userdata, level, buf):
 
 def on_connect(client, userdata, flags, rc):
  print("Connected to "+MQTT_SERVER+":"+str(MQTT_PORT)+" with result code "+str(rc))
- client.subscribe(MQTT_TOPIC)
+ client.subscribe(MQTT_TOPIC_MOTION)
+ client.subscribe(MQTT_TOPIC_EFFEKT)
 
 def on_disconnect(client, userdata, rc):
  print("client disconnected ok")
 
 def on_message(client, userdata, msg):
- # motion message received
+ # message received
  print(msg.topic+" "+str(msg.payload))
- # turn leds on
- setLedEffectToAllStripes(actualEffect)
- # start timer to turn leds off again
- threading.Timer(EFFECT_TIME, timeUp).start()
+ if msg.topic == MQTT_TOPIC_MOTION:
+   # turn leds on
+   setLedEffectToAllStripes(actualEffect)
+   # start timer to turn leds off again
+   threading.Timer(EFFECT_TIME, timeUp).start()
+ elif msg.topic == MQTT_TOPIC_EFFEKT:
+   # turn leds on
+   setLedEffectToAllStripes(msg.payload)
 
 def on_publish(client, userdata, result):
  print("data published \n")
