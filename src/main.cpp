@@ -9,16 +9,15 @@
 // pointer to configuration 
 Config* pConfig;                        
 
-TaskHandle_t Task1;
+TaskHandle_t TaskWifi;
 
-void Task1Code(void * pvParameters)
+void TaskWifiCode(void * pvParameters)
 {
-    DEBUG_T("Task1 running on core: "); DEBUG_P(xPortGetCoreID());
-    for(;;) // run forever
-    {
-      handleWebserver();
-      loopPeripherals();
-    }
+  DEBUG_T("TaskWifi running on core: "); DEBUG_P(xPortGetCoreID());
+  for(;;) // run forever
+  {
+    handleWebserver();
+  }
 }
 
 void setup() 
@@ -43,19 +42,18 @@ void setup()
   // initialize wireless functions
   initWireless();
 
-  // start "loop" task on core 1 with lowest priority 
+  // start "wifi loop" task on core 1 with priority 4 
   xTaskCreatePinnedToCore(
-    Task1Code,          // Task function
-    "Task1",            // name of task
-    10000,              // Stack size of task
-    NULL,               // parameter of the task
-    0,                  // priority of the task
-    &Task1,             // Task handle to keep track of created task
-    1);                 // pin task to core 1
+    TaskWifiCode,   // Task function
+    "TaskWifi",     // name of task
+    10000,          // Stack size of task
+    NULL,           // parameter of the task
+    4,              // priority of the task
+    &TaskWifi,      // Task handle to keep track of created task
+    1);             // pin task to core 1
 }
 
 void loop() 
 {
-  // nothing to do here. 
-  // Task1 runs the periodic "loop" task with low priority
+  loopPeripherals();
 }
