@@ -1,13 +1,14 @@
 #include "LedStripe.h"
 #include <Debug.h>
 
-
-LedStripe::LedStripe(uint16_t numPins, byte ledPin)
+LedStripe::LedStripe(uint16_t numPins, byte ledPin, bool useFastLed, CRGB* leds)
 {
   NUM_LEDS = numPins;
-  strip = Adafruit_NeoPixel(NUM_LEDS, ledPin, NEO_GRB + NEO_KHZ800);
   pHeat = new byte[NUM_LEDS];
+  pLeds = leds;
+  strip = Adafruit_NeoPixel(NUM_LEDS, ledPin, NEO_GRB + NEO_KHZ800);
   selectedEffect = eOff;
+  bUseFastLed = useFastLed;
   DEBUG_T("LedStripe: numPins: "); DEBUG_P(String(NUM_LEDS)); 
 }
 
@@ -216,6 +217,7 @@ void LedStripe::turnOffLeds()
 {
   setAll(0,0,0);
   showStrip();
+  delay(3);
 }
 
 void LedStripe::RGBLoop()
@@ -817,7 +819,13 @@ void LedStripe::meteorRain(byte red, byte green, byte blue, byte meteorSize, byt
 // used by meteorrain
 void LedStripe::fadeToBlack(int ledNo, byte fadeValue) 
 {
- #ifdef ADAFRUIT_NEOPIXEL_H 
+  if(bUseFastLed)
+  {
+   // FastLED
+   pLeds[ledNo].fadeToBlackBy( fadeValue );
+  }
+  else
+  {
     // NeoPixel
     uint32_t oldColor;
     uint8_t r, g, b;
@@ -832,11 +840,7 @@ void LedStripe::fadeToBlack(int ledNo, byte fadeValue)
     b=(b<=10)? 0 : (int) b-(b*fadeValue/256);
     
     strip.setPixelColor(ledNo, r,g,b);
- #endif
- #ifndef ADAFRUIT_NEOPIXEL_H
-   // FastLED
-   leds[ledNo].fadeToBlackBy( fadeValue );
- #endif  
+  }
 }
 
 // *** REPLACE TO HERE ***
@@ -850,29 +854,33 @@ void LedStripe::fadeToBlack(int ledNo, byte fadeValue)
 // Apply LED color changes
 void LedStripe::showStrip() 
 {
- #ifdef ADAFRUIT_NEOPIXEL_H 
-   // NeoPixel
-   strip.show();
- #endif
- #ifndef ADAFRUIT_NEOPIXEL_H
-   // FastLED
-   FastLED.show();
- #endif
+  if(bUseFastLed)
+  {
+    // FastLED
+    FastLED.show();
+  }
+  else
+  {
+    // NeoPixel
+    strip.show();
+  }
 }
 
 // Set a LED color (not yet visible)
 void LedStripe::setPixel(int Pixel, byte red, byte green, byte blue) 
 {
- #ifdef ADAFRUIT_NEOPIXEL_H 
-   // NeoPixel
-   strip.setPixelColor(Pixel, strip.Color(red, green, blue));
- #endif
- #ifndef ADAFRUIT_NEOPIXEL_H 
-   // FastLED
-   leds[Pixel].r = red;
-   leds[Pixel].g = green;
-   leds[Pixel].b = blue;
- #endif
+  if(bUseFastLed)
+  {
+    // FastLED
+    pLeds[Pixel].r = red;
+    pLeds[Pixel].g = green;
+    pLeds[Pixel].b = blue;
+  }
+  else
+  {
+    // NeoPixel
+    strip.setPixelColor(Pixel, strip.Color(red, green, blue));
+  }
 }
 
 // Set all LEDs to a given color and apply it (visible)

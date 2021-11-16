@@ -30,6 +30,20 @@ const char* PARAM_NumLeds   = "inputNumLeds";
 
 bool bWebserverStarted;
 
+void TaskWifiCode(void * pvParameters)
+{
+  DEBUG_T("TaskWifi running on core: "); DEBUG_P(xPortGetCoreID());
+
+  // initialize wireless functions
+  initWireless();
+
+  for(;;) // run forever
+  {
+    handleWebserver();
+    vTaskDelay(pdMS_TO_TICKS(10));
+  }
+}
+
 // Replaces placeholder with LED state value
 String processor(const String& var)
 {
@@ -219,18 +233,25 @@ void onMqttUnsubscribe(uint16_t packetId)
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) 
 {
   DEBUG_P("Publish received.");
-  DEBUG_T("  topic: "); DEBUG_P(topic);
-  DEBUG_T("  qos: "); DEBUG_P(properties.qos);
-  DEBUG_T("  dup: "); DEBUG_P(properties.dup);
-  DEBUG_T("  retain: "); DEBUG_P(properties.retain);
-  DEBUG_T("  len: "); DEBUG_P(len);
-  DEBUG_T("  index: "); DEBUG_P(index);
-  DEBUG_T("  total: "); DEBUG_P(total);
+  //DEBUG_T("  topic: "); DEBUG_P(topic);
+  //DEBUG_T("  qos: "); DEBUG_P(properties.qos);
+  //DEBUG_T("  dup: "); DEBUG_P(properties.dup);
+  //DEBUG_T("  retain: "); DEBUG_P(properties.retain);
+  //DEBUG_T("  len: "); DEBUG_P(len);
+  //DEBUG_T("  index: "); DEBUG_P(index);
+  //DEBUG_T("  total: "); DEBUG_P(total);
   
   if(!strcmp(topic, pConfig->getMqttTopic().c_str()))
   {
+    // Read payload
+    char payload_str[len];
+    for (int i = 0; i < len; i++) 
+    {
+      payload_str[i] = payload[i];    
+    }
     // decode payload (ledEffect)
-    byte ledEffect = String(payload).toInt();
+    byte ledEffect = String(payload_str).toInt();
+    DEBUG_T("topic: "); DEBUG_T(topic); DEBUG_T(" payload: "); DEBUG_P(ledEffect);
     // check if ledEffect is valid
     if(pLedStripe->isLedEffectValid(ledEffect))
     {

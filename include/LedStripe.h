@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "Adafruit_NeoPixel.h"
+#include "FastLED.h"
 
 enum ledEffect
 {
@@ -32,7 +33,7 @@ enum ledEffect
 class LedStripe
 {
   public:
-    LedStripe(uint16_t numPins, byte ledPin);
+    LedStripe(uint16_t numPins, byte ledPin,  bool useFastLed, CRGB* leds);
     ~LedStripe();
     void setup();
     bool changeEffect(byte newEffect);
@@ -44,7 +45,9 @@ class LedStripe
     uint16_t NUM_LEDS;
     Adafruit_NeoPixel strip;
     byte* pHeat;
+    CRGB* pLeds;
     byte selectedEffect;
+    bool bUseFastLed;
 
     void turnOffLeds();
     void RGBLoop();
