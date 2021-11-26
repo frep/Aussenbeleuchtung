@@ -4,6 +4,8 @@
 #include <Debug.h>
 #include "Config.h"
 
+TaskHandle_t TaskPeri;
+
 // LED-Streifen
 CRGB* pLeds;
 LedStripe* pLedStripe;
@@ -15,6 +17,18 @@ MotionSensor* pMotionSensor3;
 
 extern AsyncMqttClient mqttClient;
 extern Config* pConfig; 
+
+void startPeriTask()
+{
+    xTaskCreatePinnedToCore(
+    TaskPeriCode,   // Task function
+    "TaskPeri",     // name of task
+    10000,          // Stack size of task
+    NULL,           // parameter of the task
+    1,              // priority of the task
+    &TaskPeri,      // Task handle to keep track of created task
+    1);             // pin task to core 1
+}
 
 void TaskPeriCode(void * pvParameters)
 {

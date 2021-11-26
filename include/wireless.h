@@ -18,6 +18,7 @@
 // message: <ClientId>               e.g.    13
 // -----------------------------------------------------------------------
 
+void startWifiTask();
 void TaskWifiCode(void * pvParameters);
 
 void initWireless();

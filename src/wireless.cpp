@@ -11,6 +11,8 @@
 #include "Config.h"
 #include "LedStripe.h"
 
+TaskHandle_t TaskWifi;
+
 // Async MQTT
 AsyncMqttClient mqttClient;
 TimerHandle_t mqttReconnectTimer;
@@ -29,6 +31,18 @@ const char* PARAM_ClientId  = "inputClientId";
 const char* PARAM_NumLeds   = "inputNumLeds";
 
 bool bWebserverStarted;
+
+void startWifiTask()
+{
+    xTaskCreatePinnedToCore(
+    TaskWifiCode,   // Task function
+    "TaskWifi",     // name of task
+    10000,          // Stack size of task
+    NULL,           // parameter of the task
+    1,              // priority of the task
+    &TaskWifi,      // Task handle to keep track of created task
+    0);             // pin task to core 0
+}
 
 void TaskWifiCode(void * pvParameters)
 {
@@ -183,6 +197,7 @@ void WiFiEvent(WiFiEvent_t event)
         DEBUG_P("WiFi connected");
         DEBUG_P("IP address: ");
         DEBUG_P(WiFi.localIP());
+        startPeriTask();
         startWebserver();
         connectToMqtt();
         break;
