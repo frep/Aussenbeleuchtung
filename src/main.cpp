@@ -27,6 +27,9 @@ void setup()
     return;
   }
 
+  // disable watchdog-timer core 0
+  disableCore0WDT();
+
   // setup configuration
   pConfig = new Config("/config.json");
 

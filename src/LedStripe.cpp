@@ -19,8 +19,11 @@ LedStripe::~LedStripe()
 
 void LedStripe::setup()
 {
-  strip.begin();
-  strip.show();
+  if(!bUseFastLed)
+  {
+    strip.begin();
+    strip.show();
+  }
 }
 
 bool LedStripe::changeEffect(byte newEffect)
@@ -45,6 +48,7 @@ bool LedStripe::isLedEffectValid(byte effect)
 
 void LedStripe::loop()
 {
+  //DEBUG_T("loop LedStripe: "); DEBUG_P(selectedEffect);
   switch(selectedEffect) 
   {
     case eOff:
